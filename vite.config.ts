@@ -23,13 +23,6 @@ export default defineConfig({
         // Force service worker to skip waiting and claim clients immediately
         skipWaiting: true,
         clientsClaim: true,
-        // Add build timestamp to force cache invalidation on new deployments
-        additionalManifestEntries: [
-          {
-            url: '/build-timestamp.json',
-            revision: `${Date.now()}`,
-          },
-        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
