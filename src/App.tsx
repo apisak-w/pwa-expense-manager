@@ -10,10 +10,22 @@ function App() {
 
   return (
     <div className="container">
-      <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header
+        style={{
+          marginBottom: '2rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <h1>Expense Manager</h1>
         {isRestricted && (
-          <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>Offline Mode</span>
+          <span
+            className="badge"
+            style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}
+          >
+            Offline Mode
+          </span>
         )}
       </header>
 
@@ -26,7 +38,7 @@ function App() {
 
       <OfflineIndicator />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
