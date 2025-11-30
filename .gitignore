@@ -53,3 +53,4 @@ dev-dist
 
 # OS files
 Thumbs.db
+.vercel
