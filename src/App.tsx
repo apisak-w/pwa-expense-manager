@@ -10,17 +10,35 @@ function App() {
   const { isRestricted } = useRestrictedMode();
 
   return (
-    <div className="container max-w-2xl mx-auto px-4 py-8">
-      <header className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Expense Manager</h1>
-        {isRestricted && <Badge variant="destructive">Offline Mode</Badge>}
-      </header>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        {/* Header with Mailchimp-style friendly spacing */}
+        <header className="mb-12">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">Expense Manager</h1>
+            {isRestricted && (
+              <Badge variant="destructive" className="text-xs">
+                Offline Mode
+              </Badge>
+            )}
+          </div>
+          <p className="text-lg text-muted-foreground mt-2">
+            Track your spending and stay on budget
+          </p>
+        </header>
 
-      <AddExpenseForm onAdd={addExpense} />
+        {/* Form Section */}
+        <div className="mb-10">
+          <AddExpenseForm onAdd={addExpense} />
+        </div>
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Expenses</h2>
-        <ExpenseList expenses={expenses} onDelete={deleteExpense} />
+        {/* Expenses List */}
+        {expenses.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-6 text-foreground">Recent Expenses</h2>
+            <ExpenseList expenses={expenses} onDelete={deleteExpense} />
+          </div>
+        )}
       </div>
 
       <OfflineIndicator />

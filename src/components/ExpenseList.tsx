@@ -25,15 +25,20 @@ export function ExpenseList({ expenses, onDelete }: Props) {
 
   return (
     <TooltipProvider>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {expenses.map(expense => (
-          <Card key={expense.id} className="transition-all hover:shadow-md">
-            <CardContent className="p-4">
+          <Card
+            key={expense.id}
+            className="transition-all hover:shadow-md border border-border bg-card"
+          >
+            <CardContent className="p-5">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold truncate">{expense.description}</span>
-                    <Badge variant="secondary" className="text-xs shrink-0">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-semibold text-base text-foreground truncate">
+                      {expense.description}
+                    </span>
+                    <Badge variant="secondary" className="text-xs font-medium shrink-0">
                       {expense.category}
                     </Badge>
                   </div>
@@ -41,13 +46,15 @@ export function ExpenseList({ expenses, onDelete }: Props) {
                     {dayjs(expense.date).format('MMM D, YYYY')}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="font-bold text-lg">${expense.amount.toFixed(2)}</span>
+                <div className="flex items-center gap-4 shrink-0">
+                  <span className="font-bold text-xl text-foreground">
+                    ${expense.amount.toFixed(2)}
+                  </span>
                   {expense.synced ? (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div>
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        <div className="cursor-help">
+                          <CheckCircle className="h-5 w-5 text-green-600" />
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -57,8 +64,8 @@ export function ExpenseList({ expenses, onDelete }: Props) {
                   ) : (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div>
-                          <Clock className="h-4 w-4 text-yellow-500" />
+                        <div className="cursor-help">
+                          <Clock className="h-5 w-5 text-yellow-600" />
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -72,7 +79,7 @@ export function ExpenseList({ expenses, onDelete }: Props) {
                         variant="ghost"
                         size="icon"
                         onClick={() => onDelete(expense.id)}
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         aria-label="Delete expense"
                       >
                         <Trash2 className="h-4 w-4" />

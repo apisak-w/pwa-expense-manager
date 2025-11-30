@@ -1,4 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Body Font Options - All imported for easy comparison with Libre Baskerville */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap');
+
+/* Heading Font Options - All imported for easy comparison */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,30 +21,30 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 13%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 239 84% 67%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 239 84% 67%;
-    --radius: 0.75rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --popover-foreground: 0 0% 13%;
+    --primary: 45 93% 47%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 13%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 45 93% 47%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 96%;
+    --ring: 45 93% 47%;
+    --radius: 0.5rem;
+    --chart-1: 45 93% 47%;
+    --chart-2: 200 98% 39%;
+    --chart-3: 300 67% 58%;
+    --chart-4: 15 86% 57%;
+    --chart-5: 270 91% 65%;
   }
 
   .dark {
@@ -65,16 +79,132 @@
   * {
     @apply border-border;
   }
+
+  /* Ensure all text elements use Libre Baskerville for consistency */
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  span,
+  p,
+  div,
+  a {
+    font-family: inherit;
+  }
+  /* 
+   * BODY TEXT FONT OPTIONS - Uncomment the one you want to use:
+   * 
+   * Option 1: Libre Baskerville (Same as headings - Most consistent)
+   * Option 2: Noto Serif (Current - Readable, clean serif)
+   * Option 3: Crimson Text (Traditional, warm, pairs well with Baskerville)
+   * Option 4: Lora (Contemporary serif, good readability)
+   * Option 5: Merriweather (Modern serif, excellent readability)
+   * Option 6: Source Serif Pro (Professional, clean serif)
+   */
+
   body {
     @apply bg-background text-foreground;
-    font-family:
-      'Inter',
-      system-ui,
-      -apple-system,
-      sans-serif;
+
+    /* Option 1: Libre Baskerville (Same as headings) */
+    font-family: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif;
+    font-weight: 500;
+
+    /* Option 2: Noto Serif (Current) */
+    /* font-family: 'Noto Serif', 'Georgia', 'Times New Roman', serif; */
+
+    /* Option 3: Crimson Text */
+    /* font-family: 'Crimson Text', 'Georgia', 'Times New Roman', serif; */
+
+    /* Option 4: Lora */
+    /* font-family: 'Lora', 'Georgia', 'Times New Roman', serif; */
+
+    /* Option 5: Merriweather */
+    /* font-family: 'Merriweather', 'Georgia', 'Times New Roman', serif; */
+
+    /* Option 6: Source Serif Pro */
+    /* font-family: 'Source Serif Pro', 'Georgia', 'Times New Roman', serif; */
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     padding-bottom: env(safe-area-inset-bottom);
+    line-height: 1.75;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Ensure form elements and UI components inherit the font */
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+    font-weight: inherit;
+  }
+
+  /* Labels and small text should be slightly lighter for hierarchy */
+  label,
+  .text-sm,
+  .text-xs {
+    font-weight: 500;
+  }
+
+  /* Buttons should be semibold for emphasis */
+  button {
+    font-weight: 600;
+  }
+
+  /* 
+   * HEADING FONT OPTIONS - Uncomment the one you want to use:
+   * 
+   * Option 1: Playfair Display (Current - Elegant, sophisticated)
+   * Option 2: DM Serif Display (Modern, high contrast)
+   * Option 3: Cinzel (Classical Roman, formal)
+   * Option 4: Crimson Pro (Traditional, warm)
+   * Option 5: Bitter (Contemporary, strong serifs)
+   * Option 6: Libre Baskerville (Classic, elegant)
+   */
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    /* Option 1: Playfair Display */
+    /* font-family: 'Playfair Display', 'Georgia', serif; */
+
+    /* Option 2: DM Serif Display */
+    /* font-family: 'DM Serif Display', 'Georgia', serif; */
+
+    /* Option 3: Cinzel */
+    /* font-family: 'Cinzel', 'Georgia', serif; */
+
+    /* Option 4: Crimson Pro */
+    /* font-family: 'Crimson Pro', 'Georgia', serif; */
+
+    /* Option 5: Bitter */
+    /* font-family: 'Bitter', 'Georgia', serif; */
+
+    /* Option 6: Libre Baskerville */
+    font-family: 'Libre Baskerville', 'Georgia', serif;
+
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+}
+
+/* Mailchimp-inspired spacing and typography */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@layer utilities {
+  .mailchimp-spacing {
+    @apply space-y-6;
   }
 }

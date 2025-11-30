@@ -39,15 +39,17 @@ export function AddExpenseForm({ onAdd }: Props) {
   };
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>Add New Expense</CardTitle>
+    <Card className="shadow-sm border border-border bg-card">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-semibold">Add New Expense</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="amount">Amount</Label>
+              <Label htmlFor="amount" className="text-sm font-medium text-foreground">
+                Amount
+              </Label>
               <Input
                 id="amount"
                 type="number"
@@ -55,25 +57,31 @@ export function AddExpenseForm({ onAdd }: Props) {
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
                 placeholder="0.00"
+                className="h-11 text-base"
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-sm font-medium text-foreground">
+                Description
+              </Label>
               <Input
                 id="description"
                 type="text"
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 placeholder="What did you buy?"
+                className="h-11 text-base"
                 required
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category" className="text-sm font-medium text-foreground">
+                  Category
+                </Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger id="category">
+                  <SelectTrigger id="category" className="h-11">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -86,17 +94,24 @@ export function AddExpenseForm({ onAdd }: Props) {
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date" className="text-sm font-medium text-foreground">
+                  Date
+                </Label>
                 <Input
                   id="date"
                   type="date"
                   value={date}
                   onChange={e => setDate(e.target.value)}
+                  className="h-11 text-base"
                   required
                 />
               </div>
             </div>
-            <Button type="submit" disabled={isSubmitting} className="w-full mt-2">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 text-base font-semibold mt-2"
+            >
               {isSubmitting ? 'Adding...' : 'Add Expense'}
             </Button>
           </div>
