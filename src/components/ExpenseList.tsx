@@ -1,6 +1,9 @@
 import type { Expense } from '../types';
 import dayjs from 'dayjs';
 import { CheckCircle, Clock, Trash2 } from 'lucide-react';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 
 interface Props {
   expenses: Expense[];
@@ -10,69 +13,51 @@ interface Props {
 export function ExpenseList({ expenses, onDelete }: Props) {
   if (expenses.length === 0) {
     return (
-      <div className="glass-panel" style={{ textAlign: 'center', padding: '2rem' }}>
-        <p style={{ color: 'var(--text-muted)' }}>No expenses yet.</p>
-      </div>
+      <Card>
+        <CardContent className="text-center py-8">
+          <p className="text-muted-foreground">No expenses yet.</p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="expense-list">
+    <div className="space-y-2">
       {expenses.map(expense => (
-        <div
-          key={expense.id}
-          className="glass-panel expense-item"
-          style={{
-            marginBottom: '0.5rem',
-            padding: '1rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontWeight: 600 }}>{expense.description}</span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  padding: '0.125rem 0.5rem',
-                  borderRadius: '999px',
-                  background: 'rgba(255,255,255,0.1)',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                {expense.category}
-              </span>
+        <Card key={expense.id} className="transition-all hover:shadow-md">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-semibold truncate">{expense.description}</span>
+                  <Badge variant="secondary" className="text-xs shrink-0">
+                    {expense.category}
+                  </Badge>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {dayjs(expense.date).format('MMM D, YYYY')}
+                </div>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="font-bold text-lg">${expense.amount.toFixed(2)}</span>
+                {expense.synced ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Clock className="h-4 w-4 text-yellow-500" />
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete(expense.id)}
+                  className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  aria-label="Delete expense"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              {dayjs(expense.date).format('MMM D, YYYY')}
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span style={{ fontWeight: 700, fontSize: '1.125rem' }}>
-              ${expense.amount.toFixed(2)}
-            </span>
-            {expense.synced ? (
-              <CheckCircle size={16} color="var(--status-success)" />
-            ) : (
-              <Clock size={16} color="var(--status-warning)" />
-            )}
-            <button
-              onClick={() => onDelete(expense.id)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--status-error)',
-                padding: '0.25rem',
-              }}
-              aria-label="Delete expense"
-            >
-              <Trash2 size={18} />
-            </button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
