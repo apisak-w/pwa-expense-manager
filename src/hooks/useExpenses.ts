@@ -4,6 +4,7 @@ import type { Expense, SyncItem } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { syncService } from '../services/sync';
 import { useNetworkStatus } from './useNetworkStatus';
+import dayjs from 'dayjs';
 
 export function useExpenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -11,7 +12,7 @@ export function useExpenses() {
 
   const loadExpenses = useCallback(async () => {
     const data = await storage.getExpenses();
-    setExpenses(data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    setExpenses(data.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf()));
   }, []);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export function useExpenses() {
       ...expenseData,
       id: uuidv4(),
       synced: false,
-      updatedAt: Date.now(),
+      updatedAt: dayjs().valueOf(),
     };
 
     await storage.addExpense(newExpense);
@@ -40,7 +41,7 @@ export function useExpenses() {
       id: uuidv4(),
       action: 'create',
       payload: newExpense,
-      timestamp: Date.now(),
+      timestamp: dayjs().valueOf(),
     };
     await storage.addToSyncQueue(syncItem);
 
@@ -59,7 +60,7 @@ export function useExpenses() {
       id: uuidv4(),
       action: 'delete',
       payload: { id },
-      timestamp: Date.now(),
+      timestamp: dayjs().valueOf(),
     };
     await storage.addToSyncQueue(syncItem);
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Expense } from '../types';
+import dayjs from 'dayjs';
 
 interface Props {
   onAdd: (expense: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => Promise<void>;
@@ -9,7 +10,7 @@ export function AddExpenseForm({ onAdd }: Props) {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Food');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,7 +30,7 @@ export function AddExpenseForm({ onAdd }: Props) {
     setAmount('');
     setDescription('');
     setCategory('Food');
-    setDate(new Date().toISOString().split('T')[0]);
+    setDate(dayjs().format('YYYY-MM-DD'));
   };
 
   return (
