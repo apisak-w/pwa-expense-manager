@@ -27,18 +27,10 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
   const { getCategoriesByType } = useCategories();
   const availableCategories = getCategoriesByType(type);
 
-  // Set default category when type changes or categories load
+  // Reset category when type changes
   useEffect(() => {
-    if (availableCategories.length > 0) {
-      // If current category is not in the new list, reset it
-      const exists = availableCategories.find(c => c.name === category);
-      if (!exists) {
-        setCategory(availableCategories[0].name);
-      }
-    } else {
-      setCategory('');
-    }
-  }, [type, availableCategories, category]);
+    setCategory('');
+  }, [type]);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
