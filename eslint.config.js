@@ -33,6 +33,7 @@ export default defineConfig([
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/explicit-function-return-type': 'error',
     },
   },
 ]);

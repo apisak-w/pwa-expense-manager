@@ -3,7 +3,14 @@ import { storage } from '../services/storage';
 import type { Category, TransactionType } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-export function useCategories() {
+export function useCategories(): {
+  categories: Category[];
+  addCategory: (name: string, type: TransactionType) => Promise<void>;
+  updateCategory: (id: string, name: string) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
+  getCategoriesByType: (type: TransactionType) => Category[];
+  refreshCategories: () => Promise<void>;
+} {
   const [categories, setCategories] = useState<Category[]>([]);
 
   const loadCategories = useCallback(async () => {
@@ -15,7 +22,7 @@ export function useCategories() {
     loadCategories();
   }, [loadCategories]);
 
-  const addCategory = async (name: string, type: TransactionType) => {
+  const addCategory = async (name: string, type: TransactionType): Promise<void> => {
     const newCategory: Category = {
       id: uuidv4(),
       name,
@@ -26,16 +33,16 @@ export function useCategories() {
     await loadCategories();
   };
 
-  const deleteCategory = async (id: string) => {
+  const deleteCategory = async (id: string): Promise<void> => {
     await storage.deleteCategory(id);
     await loadCategories();
   };
 
-  const getCategoriesByType = (type: TransactionType) => {
+  const getCategoriesByType = (type: TransactionType): Category[] => {
     return categories.filter(c => c.type === type);
   };
 
-  const updateCategory = async (id: string, name: string) => {
+  const updateCategory = async (id: string, name: string): Promise<void> => {
     const category = categories.find(c => c.id === id);
     if (!category) return;
     const oldName = category.name;

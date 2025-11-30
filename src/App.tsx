@@ -5,7 +5,7 @@ import { useExpenses } from './hooks/useExpenses';
 import { useRestrictedMode } from './hooks/useRestrictedMode';
 import { Badge } from './components/ui/badge';
 
-function App() {
+function App(): React.JSX.Element {
   const { expenses, addExpense, deleteExpense, toggleCleared } = useExpenses();
   const { isRestricted } = useRestrictedMode();
 

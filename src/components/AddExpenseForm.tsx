@@ -14,7 +14,7 @@ interface Props {
   onAdd: (expense: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => Promise<void>;
 }
 
-export function AddExpenseForm({ onAdd }: Props) {
+export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<TransactionType>('expense');
@@ -40,7 +40,7 @@ export function AddExpenseForm({ onAdd }: Props) {
     }
   }, [type, availableCategories, category]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!amount || !description || !category) return;
 

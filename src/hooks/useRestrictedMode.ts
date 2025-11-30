@@ -8,11 +8,14 @@ export type RestrictedAction =
   | 'edit_expense'
   | 'delete_expense';
 
-export function useRestrictedMode() {
+export function useRestrictedMode(): {
+  isRestricted: boolean;
+  canPerformAction: (action: RestrictedAction) => boolean;
+} {
   const isOnline = useNetworkStatus();
   const isRestricted = !isOnline;
 
-  const canPerformAction = (action: RestrictedAction) => {
+  const canPerformAction = (action: RestrictedAction): boolean => {
     if (isOnline) return true;
 
     // Actions that require online connectivity

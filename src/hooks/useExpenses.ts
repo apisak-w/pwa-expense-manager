@@ -6,7 +6,12 @@ import { syncService } from '../services/sync';
 import { useNetworkStatus } from './useNetworkStatus';
 import dayjs from 'dayjs';
 
-export function useExpenses() {
+export function useExpenses(): {
+  expenses: Expense[];
+  addExpense: (expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => Promise<void>;
+  deleteExpense: (id: string) => Promise<void>;
+  toggleCleared: (id: string) => Promise<void>;
+} {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const isOnline = useNetworkStatus();
 
@@ -26,7 +31,9 @@ export function useExpenses() {
     }
   }, [isOnline, loadExpenses]);
 
-  const addExpense = async (expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => {
+  const addExpense = async (
+    expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt'>
+  ): Promise<void> => {
     const newExpense: Expense = {
       ...expenseData,
       id: uuidv4(),
@@ -53,7 +60,7 @@ export function useExpenses() {
     await loadExpenses();
   };
 
-  const deleteExpense = async (id: string) => {
+  const deleteExpense = async (id: string): Promise<void> => {
     await storage.deleteExpense(id);
 
     const syncItem: SyncItem = {
@@ -71,7 +78,7 @@ export function useExpenses() {
     await loadExpenses();
   };
 
-  const toggleCleared = async (id: string) => {
+  const toggleCleared = async (id: string): Promise<void> => {
     const expense = await storage.getExpense(id);
     if (!expense) return;
 

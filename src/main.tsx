@@ -5,7 +5,7 @@ import App from './App.tsx';
 
 // Initialize theme based on system preference
 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-const updateTheme = () => {
+const updateTheme = (): void => {
   if (mediaQuery.matches) {
     document.documentElement.classList.add('dark');
   } else {

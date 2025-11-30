@@ -12,7 +12,7 @@ interface Props {
   onClose: () => void;
 }
 
-export function CategoryManager({ type, onClose }: Props) {
+export function CategoryManager({ type, onClose }: Props): React.JSX.Element {
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
   const [newCategoryName, setNewCategoryName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,19 +23,19 @@ export function CategoryManager({ type, onClose }: Props) {
     .filter(c => c.type === type)
     .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const handleAdd = async (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!newCategoryName.trim()) return;
     await addCategory(newCategoryName.trim(), type);
     setNewCategoryName('');
   };
 
-  const startEditing = (category: { id: string; name: string }) => {
+  const startEditing = (category: { id: string; name: string }): void => {
     setEditingId(category.id);
     setEditName(category.name);
   };
 
-  const saveEdit = async () => {
+  const saveEdit = async (): Promise<void> => {
     if (editingId && editName.trim()) {
       await updateCategory(editingId, editName.trim());
       setEditingId(null);
@@ -43,7 +43,7 @@ export function CategoryManager({ type, onClose }: Props) {
     }
   };
 
-  const cancelEdit = () => {
+  const cancelEdit = (): void => {
     setEditingId(null);
     setEditName('');
   };

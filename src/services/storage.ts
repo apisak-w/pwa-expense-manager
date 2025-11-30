@@ -37,7 +37,7 @@ const DEFAULT_CATEGORIES: Omit<Category, 'id'>[] = [
 
 let dbPromise: Promise<IDBPDatabase<ExpenseDB>>;
 
-export const initDB = () => {
+export const initDB = (): Promise<IDBPDatabase<ExpenseDB>> => {
   if (!dbPromise) {
     dbPromise = openDB<ExpenseDB>(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion, _newVersion, transaction) {
@@ -85,59 +85,59 @@ export const initDB = () => {
 };
 
 export const storage = {
-  async addExpense(expense: Expense) {
+  async addExpense(expense: Expense): Promise<void> {
     const db = await initDB();
     await db.put('expenses', expense);
   },
 
-  async getExpenses() {
+  async getExpenses(): Promise<Expense[]> {
     const db = await initDB();
     return db.getAllFromIndex('expenses', 'by-date');
   },
 
-  async deleteExpense(id: string) {
+  async deleteExpense(id: string): Promise<void> {
     const db = await initDB();
     await db.delete('expenses', id);
   },
 
-  async getExpense(id: string) {
+  async getExpense(id: string): Promise<Expense | undefined> {
     const db = await initDB();
     return db.get('expenses', id);
   },
 
   // Category Methods
-  async getCategories() {
+  async getCategories(): Promise<Category[]> {
     const db = await initDB();
     return db.getAll('categories');
   },
 
-  async addCategory(category: Category) {
+  async addCategory(category: Category): Promise<void> {
     const db = await initDB();
     await db.put('categories', category);
   },
 
-  async deleteCategory(id: string) {
+  async deleteCategory(id: string): Promise<void> {
     const db = await initDB();
     await db.delete('categories', id);
   },
 
   // Sync Queue Methods
-  async addToSyncQueue(item: SyncItem) {
+  async addToSyncQueue(item: SyncItem): Promise<void> {
     const db = await initDB();
     await db.put('syncQueue', item);
   },
 
-  async getSyncQueue() {
+  async getSyncQueue(): Promise<SyncItem[]> {
     const db = await initDB();
     return db.getAll('syncQueue');
   },
 
-  async removeFromSyncQueue(id: string) {
+  async removeFromSyncQueue(id: string): Promise<void> {
     const db = await initDB();
     await db.delete('syncQueue', id);
   },
 
-  async clearSyncQueue() {
+  async clearSyncQueue(): Promise<void> {
     const db = await initDB();
     await db.clear('syncQueue');
   },

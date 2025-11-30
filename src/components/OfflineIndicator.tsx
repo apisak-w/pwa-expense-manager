@@ -2,7 +2,7 @@ import { WifiOff } from 'lucide-react';
 import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import { Alert, AlertDescription } from './ui/alert';
 
-export function OfflineIndicator() {
+export function OfflineIndicator(): React.JSX.Element | null {
   const isOnline = useNetworkStatus();
 
   if (isOnline) return null;

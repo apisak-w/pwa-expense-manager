@@ -13,7 +13,7 @@ interface Props {
   onToggleCleared: (id: string) => void;
 }
 
-export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props) {
+export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): React.JSX.Element {
   if (expenses.length === 0) {
     return (
       <Alert>

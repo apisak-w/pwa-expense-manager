@@ -3,7 +3,7 @@ import { api } from './api';
 import type { SyncItem, Expense } from '../types';
 
 export const syncService = {
-  async processQueue() {
+  async processQueue(): Promise<void> {
     const queue = await storage.getSyncQueue();
     if (queue.length === 0) return;
 
@@ -22,7 +22,7 @@ export const syncService = {
     console.log('Sync complete');
   },
 
-  async processItem(item: SyncItem) {
+  async processItem(item: SyncItem): Promise<void> {
     switch (item.action) {
       case 'create':
         await api.createExpense(item.payload as Expense);

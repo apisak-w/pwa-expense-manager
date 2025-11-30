@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
-export function useTheme() {
+export function useTheme(): void {
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const updateTheme = () => {
+    const updateTheme = (): void => {
       const isDark = mediaQuery.matches;
       const root = document.documentElement;
 
@@ -21,7 +21,7 @@ export function useTheme() {
     // Listen for changes
     mediaQuery.addEventListener('change', updateTheme);
 
-    return () => {
+    return (): void => {
       mediaQuery.removeEventListener('change', updateTheme);
     };
   }, []);
