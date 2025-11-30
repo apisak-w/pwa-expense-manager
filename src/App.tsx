@@ -6,7 +6,7 @@ import { useRestrictedMode } from './hooks/useRestrictedMode';
 import { Badge } from './components/ui/badge';
 
 function App() {
-  const { expenses, addExpense, deleteExpense } = useExpenses();
+  const { expenses, addExpense, deleteExpense, toggleCleared } = useExpenses();
   const { isRestricted } = useRestrictedMode();
 
   return (
@@ -22,9 +22,7 @@ function App() {
               </Badge>
             )}
           </div>
-          <p className="text-lg text-muted-foreground mt-2">
-            Track your spending and stay on budget
-          </p>
+          <p className="text-lg text-muted-foreground mt-2">Track your income and expenses</p>
         </header>
 
         {/* Form Section */}
@@ -33,12 +31,14 @@ function App() {
         </div>
 
         {/* Expenses List */}
-        {expenses.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-6 text-foreground">Recent Expenses</h2>
-            <ExpenseList expenses={expenses} onDelete={deleteExpense} />
-          </div>
-        )}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-6 text-foreground">Recent Transactions</h2>
+          <ExpenseList
+            expenses={expenses}
+            onDelete={deleteExpense}
+            onToggleCleared={toggleCleared}
+          />
+        </div>
       </div>
 
       <OfflineIndicator />

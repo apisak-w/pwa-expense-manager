@@ -71,5 +71,32 @@ export function useExpenses() {
     await loadExpenses();
   };
 
-  return { expenses, addExpense, deleteExpense };
+  const toggleCleared = async (id: string) => {
+    const expense = await storage.getExpense(id);
+    if (!expense) return;
+
+    const updatedExpense = {
+      ...expense,
+      isCleared: !expense.isCleared,
+      updatedAt: dayjs().valueOf(),
+      synced: false,
+    };
+    await storage.addExpense(updatedExpense);
+
+    const syncItem: SyncItem = {
+      id: uuidv4(),
+      action: 'update',
+      payload: updatedExpense,
+      timestamp: dayjs().valueOf(),
+    };
+    await storage.addToSyncQueue(syncItem);
+
+    if (isOnline) {
+      syncService.processQueue().then(() => loadExpenses());
+    }
+
+    await loadExpenses();
+  };
+
+  return { expenses, addExpense, deleteExpense, toggleCleared };
 }
