@@ -14,7 +14,6 @@ export function useExpenses() {
     setExpenses(data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
   }, []);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     loadExpenses();
   }, [loadExpenses]);
