@@ -141,7 +141,7 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4">
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="category" className="text-sm font-medium text-foreground">
