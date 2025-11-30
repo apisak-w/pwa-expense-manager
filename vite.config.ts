@@ -20,6 +20,16 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Force service worker to skip waiting and claim clients immediately
+        skipWaiting: true,
+        clientsClaim: true,
+        // Add build timestamp to force cache invalidation on new deployments
+        additionalManifestEntries: [
+          {
+            url: '/build-timestamp.json',
+            revision: `${Date.now()}`,
+          },
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

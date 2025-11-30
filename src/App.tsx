@@ -1,4 +1,5 @@
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { UpdateNotification } from './components/UpdateNotification';
 import { AddExpenseForm } from './components/AddExpenseForm';
 import { ExpenseList } from './components/ExpenseList';
 import { useExpenses } from './hooks/useExpenses';
@@ -42,6 +43,7 @@ function App(): React.JSX.Element {
       </div>
 
       <OfflineIndicator />
+      <UpdateNotification />
     </div>
   );
 }
