@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/uuid": "^11.0.0",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.19",
     "idb": "^8.0.3",
     "lucide-react": "^0.555.0",
     "react": "^19.2.0",
@@ -37,8 +37,5 @@
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
     "vite-plugin-pwa": "^1.2.0"
-  },
-  "volta": {
-    "node": "24.11.1"
   }
 }

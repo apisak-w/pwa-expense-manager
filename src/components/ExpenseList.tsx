@@ -1,5 +1,5 @@
 import type { Expense } from '../types';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 import { CheckCircle, Clock, Trash2 } from 'lucide-react';
 
 interface Props {
@@ -32,7 +32,7 @@ export function ExpenseList({ expenses, onDelete }: Props) {
                             }}>{expense.category}</span>
                         </div>
                         <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                            {format(new Date(expense.date), 'MMM d, yyyy')}
+                            {dayjs(expense.date).format('MMM D, YYYY')}
                         </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
