@@ -1,73 +1,162 @@
-# React + TypeScript + Vite
+# PWA Expense Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, offline-capable Progressive Web App for tracking income and expenses. Built with React, TypeScript, and Vite, this application works seamlessly both online and offline with full data persistence.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 💰 Transaction Management
+- **Dual Transaction Types**: Track both expenses and income
+- **Custom Categories**: Create and manage custom categories for expenses and income
+- **Edit Categories**: Rename existing categories with automatic updates to all associated transactions
+- **Transaction Clearing**: Mark transactions as cleared/uncleared for better reconciliation
+- **Date Tracking**: Flexible date selection for each transaction
+- **Recent Transactions View**: Easy-to-scan list of all your financial activities
 
-## React Compiler
+### 📱 Progressive Web App
+- **Offline Support**: Full functionality without internet connection using IndexedDB
+- **Service Worker**: Automatic caching for instant loading
+- **Auto-Update Detection**: Notifies users when a new version is available
+- **Installable**: Add to home screen on mobile devices for native-like experience
+- **Offline Indicator**: Visual feedback when offline
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🎨 Modern UI/UX
+- **Dark Mode Support**: Beautiful dark theme for reduced eye strain
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **Premium Aesthetics**: Modern design with smooth animations and transitions
+- **Radix UI Components**: Accessible, well-tested UI components
+- **Tailwind CSS**: Utility-first styling for consistent design
 
-## Expanding the ESLint configuration
+### 🔧 Developer Experience
+- **TypeScript**: Full type safety across the entire codebase
+- **Strict TypeScript Configuration**: Enforced function return types and strict mode
+- **ESLint + Prettier**: Automated code formatting and linting
+- **Husky + lint-staged**: Pre-commit hooks for code quality
+- **Vitest**: Comprehensive unit test coverage
+- **CI/CD Pipeline**: Automated testing, linting, and building via GitHub Actions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Framework**: React 19.2 with TypeScript
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Icons**: Lucide React
+- **Storage**: IndexedDB (via idb)
+- **PWA**: vite-plugin-pwa with Workbox
+- **Testing**: Vitest + React Testing Library
+- **Date Handling**: Day.js
+- **Package Manager**: pnpm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🚀 Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+
+- Node.js >= 24.0.0
+- pnpm 10 or later
+
+### Installation
+
+```bash
+# Navigate to project directory
+cd pwa-expense-manager
+
+# Install dependencies
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Start dev server
+pnpm dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start dev server with network access
+pnpm dev --host
+
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run linter
+pnpm lint
+
+# Fix linting issues
+pnpm lint:fix
+
+# Format code
+pnpm format
+
+# Check formatting
+pnpm format:check
 ```
+
+### Building
+
+```bash
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+
+# Preview with network access
+pnpm preview:host
+```
+
+## 📦 Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── ui/             # Reusable UI components (Radix UI)
+│   ├── AddExpenseForm.tsx
+│   ├── CategoryManager.tsx
+│   ├── ExpenseList.tsx
+│   ├── OfflineIndicator.tsx
+│   └── UpdateNotification.tsx
+├── hooks/              # Custom React hooks
+├── services/           # Business logic and API services
+├── lib/                # Utility functions
+├── test/               # Test setup and utilities
+├── types.ts            # TypeScript type definitions
+└── main.tsx            # Application entry point
+```
+
+## 🧪 Testing
+
+The project uses Vitest and React Testing Library for unit testing:
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+```
+
+Tests are automatically run in CI/CD pipeline on every push and pull request.
+
+## 🚢 Deployment
+
+The application is configured for deployment on Vercel with the following features:
+
+- Automatic deployments on push to main branch
+- Service Worker updates on each deployment
+- Optimized production builds
+- Environment variable support
+
+## 📄 License
+
+This project is private and not licensed for public use.
+
+## 🤝 Contributing
+
+This is a personal project. If you'd like to contribute, please follow standard contribution guidelines:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Ensure all tests pass
+5. Submit a pull request
