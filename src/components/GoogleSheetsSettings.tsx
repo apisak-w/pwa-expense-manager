@@ -48,8 +48,10 @@ export function GoogleSheetsSettings(): React.JSX.Element {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">Connection Status</p>
-            {isAuthenticated && user ? (
-              <p className="text-sm text-muted-foreground">{user}</p>
+            {isAuthenticated ? (
+              <p className="text-sm text-muted-foreground">
+                {user || 'Connected (fetching info...)'}
+              </p>
             ) : (
               <p className="text-sm text-muted-foreground">Not connected</p>
             )}

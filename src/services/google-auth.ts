@@ -26,50 +26,56 @@ export class GoogleAuthService {
   private listeners: AuthStateListener[] = [];
   private tokenClient: google.accounts.oauth2.TokenClient | null = null;
   private initialized = false;
+  private initializationPromise: Promise<void> | null = null;
 
   /**
    * Initialize the Google Identity Services client
    */
   async initialize(): Promise<void> {
     if (this.initialized) return;
+    if (this.initializationPromise) return this.initializationPromise;
 
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    if (!clientId) {
-      throw new Error('VITE_GOOGLE_CLIENT_ID is not configured');
-    }
+    this.initializationPromise = (async (): Promise<void> => {
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      if (!clientId) {
+        throw new Error('VITE_GOOGLE_CLIENT_ID is not configured');
+      }
 
-    // Wait for the GIS library to load
-    await this.waitForGIS();
+      // Wait for the GIS library to load
+      await this.waitForGIS();
 
-    this.tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: clientId,
-      scope:
-        'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
-      callback: (response: google.accounts.oauth2.TokenResponse) => {
-        if (response.error) {
-          console.error('OAuth error:', response.error);
-          return;
-        }
+      this.tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope:
+          'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email',
+        callback: (response: google.accounts.oauth2.TokenResponse) => {
+          if (response.error) {
+            console.error('OAuth error:', response.error);
+            return;
+          }
 
-        const expiresInSeconds = parseInt(response.expires_in) || 3600;
-        const expiresAt = dayjs().add(expiresInSeconds, 'second').valueOf();
+          const expiresInSeconds = parseInt(response.expires_in) || 3600;
+          const expiresAt = dayjs().add(expiresInSeconds, 'second').valueOf();
 
-        this.updateAuthState({
-          isAuthenticated: true,
-          accessToken: response.access_token,
-          expiresAt,
-          userEmail: null, // We'll fetch this separately
-        });
+          this.updateAuthState({
+            isAuthenticated: true,
+            accessToken: response.access_token,
+            expiresAt,
+            userEmail: null, // We'll fetch this separately
+          });
 
-        // Fetch user info
-        this.fetchUserInfo(response.access_token);
-      },
-    });
+          // Fetch user info
+          this.fetchUserInfo(response.access_token);
+        },
+      });
 
-    this.initialized = true;
+      this.initialized = true;
 
-    // Try to restore session from storage
-    await this.restoreSession();
+      // Try to restore session from storage
+      await this.restoreSession();
+    })();
+
+    return this.initializationPromise;
   }
 
   /**
