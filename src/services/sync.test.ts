@@ -27,7 +27,7 @@ describe('Sync Service', () => {
     amount: 100,
     category: 'Food',
     date: '2023-01-01',
-    note: 'Lunch',
+    description: 'Lunch',
     type: 'expense',
     synced: false,
     updatedAt: 1234567890,
