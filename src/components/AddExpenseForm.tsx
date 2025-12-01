@@ -24,7 +24,7 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
 
-  const { getCategoriesByType } = useCategories();
+  const { getCategoriesByType, refreshCategories } = useCategories();
   const availableCategories = getCategoriesByType(type);
 
   // Reset category when type changes
@@ -70,7 +70,13 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
         }}
       >
         <div style={{ width: '100%', maxWidth: '500px' }}>
-          <CategoryManager type={type} onClose={() => setShowCategoryManager(false)} />
+          <CategoryManager
+            type={type}
+            onClose={async () => {
+              await refreshCategories();
+              setShowCategoryManager(false);
+            }}
+          />
         </div>
       </div>
     );
