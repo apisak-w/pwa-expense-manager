@@ -3,6 +3,7 @@ import { googleAuthService } from '../services/google-auth';
 import { googleSheetsService } from '../services/google-sheets';
 import { storage } from '../services/storage';
 import type { SyncStatus, Expense } from '../types';
+import dayjs from 'dayjs';
 
 export function useGoogleSheets(): {
   isSyncing: boolean;
@@ -114,7 +115,7 @@ export function useGoogleSheets(): {
       await bidirectionalSync();
 
       // Update last sync timestamp
-      const now = Date.now();
+      const now = dayjs().valueOf();
       const updatedMetadata = await storage.getSyncMetadata();
       await storage.setSyncMetadata({
         ...updatedMetadata,

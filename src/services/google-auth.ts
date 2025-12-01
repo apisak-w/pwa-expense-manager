@@ -1,6 +1,11 @@
 /// <reference types="../types/google-gsi" />
 /// <reference types="gapi.auth2" />
 
+import dayjs from 'dayjs';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(isSameOrAfter);
+
 export interface GoogleAuthState {
   isAuthenticated: boolean;
   accessToken: string | null;
@@ -46,7 +51,9 @@ export class GoogleAuthService {
           return;
         }
 
-        const expiresAt = Date.now() + (parseInt(response.expires_in) || 3600) * 1000;
+        const expiresInSeconds = parseInt(response.expires_in) || 3600;
+        const expiresAt = dayjs().add(expiresInSeconds, 'second').valueOf();
+
         this.updateAuthState({
           isAuthenticated: true,
           accessToken: response.access_token,
@@ -163,7 +170,7 @@ export class GoogleAuthService {
    */
   isTokenExpired(): boolean {
     if (!this.authState.expiresAt) return true;
-    return Date.now() >= this.authState.expiresAt;
+    return dayjs().isSameOrAfter(this.authState.expiresAt);
   }
 
   /**
@@ -195,7 +202,9 @@ export class GoogleAuthService {
             return;
           }
 
-          const expiresAt = Date.now() + (parseInt(response.expires_in) || 3600) * 1000;
+          const expiresInSeconds = parseInt(response.expires_in) || 3600;
+          const expiresAt = dayjs().add(expiresInSeconds, 'second').valueOf();
+
           this.updateAuthState({
             ...this.authState,
             accessToken: response.access_token,
@@ -255,7 +264,7 @@ export class GoogleAuthService {
 
       if (tokens && tokens.accessToken && tokens.expiresAt) {
         // Check if token is still valid
-        if (Date.now() < tokens.expiresAt) {
+        if (dayjs().isBefore(tokens.expiresAt)) {
           this.updateAuthState({
             isAuthenticated: true,
             accessToken: tokens.accessToken,
