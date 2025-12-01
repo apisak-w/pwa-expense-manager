@@ -143,6 +143,13 @@
     font-weight: inherit;
   }
 
+  /* Fix for iOS date input styling */
+  input[type='date'] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 2.75rem; /* Match h-11 (44px) */
+  }
+
   /* Labels and small text should be slightly lighter for hierarchy */
   label,
   .text-sm,

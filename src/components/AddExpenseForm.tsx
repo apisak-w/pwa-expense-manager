@@ -178,7 +178,7 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
                   type="date"
                   value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="h-11 text-base"
+                  className="h-11 text-base block w-full appearance-none text-left"
                   required
                 />
               </div>
