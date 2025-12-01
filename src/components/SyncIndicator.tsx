@@ -2,27 +2,13 @@ import { useGoogleSheets } from '../hooks/useGoogleSheets';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import { Cloud, Loader2, AlertCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import formatLastSync from '../lib/time';
 
 export function SyncIndicator(): React.JSX.Element {
   const { isAuthenticated } = useGoogleAuth();
   const { isSyncing, lastSync, syncError } = useGoogleSheets();
 
   if (!isAuthenticated) return <></>;
-
-  const formatLastSync = (timestamp: number | null): string => {
-    if (!timestamp) return 'Not synced yet';
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-
-    if (diffMins < 1) return 'Synced just now';
-    if (diffMins < 60) return `Synced ${diffMins} min ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `Synced ${diffHours}h ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `Synced ${diffDays}d ago`;
-  };
 
   return (
     <TooltipProvider>
@@ -48,7 +34,13 @@ export function SyncIndicator(): React.JSX.Element {
                 <p className="text-xs">{syncError}</p>
               </>
             ) : (
-              <p>{formatLastSync(lastSync)}</p>
+              <p>
+                {formatLastSync(lastSync, {
+                  nullLabel: 'Not synced yet',
+                  justNowLabel: 'just now',
+                  prefix: 'Synced',
+                })}
+              </p>
             )}
           </div>
         </TooltipContent>

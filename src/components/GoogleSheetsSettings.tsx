@@ -7,6 +7,7 @@ import { Separator } from './ui/separator';
 import { Loader2, Cloud, CloudOff, ExternalLink, Check, AlertCircle } from 'lucide-react';
 import { storage } from '../services/storage';
 import { useState, useEffect } from 'react';
+import formatLastSync from '../lib/time';
 
 export function GoogleSheetsSettings(): React.JSX.Element {
   const { isAuthenticated, user, isLoading: authLoading, signIn, signOut } = useGoogleAuth();
@@ -30,21 +31,6 @@ export function GoogleSheetsSettings(): React.JSX.Element {
       });
     }
   }, [isAuthenticated]);
-
-  const formatLastSync = (timestamp: number | null): string => {
-    if (!timestamp) return 'Never';
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  };
 
   return (
     <Card>
@@ -103,7 +89,9 @@ export function GoogleSheetsSettings(): React.JSX.Element {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">Last Sync</p>
-                <p className="text-sm text-muted-foreground">{formatLastSync(lastSync)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatLastSync(lastSync, { nullLabel: 'Never', justNowLabel: 'Just now' })}
+                </p>
               </div>
 
               {syncError && (
