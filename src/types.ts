@@ -25,3 +25,29 @@ export interface SyncItem {
   payload: unknown;
   timestamp: number;
 }
+
+export interface GoogleAuthState {
+  isAuthenticated: boolean;
+  accessToken: string | null;
+  expiresAt: number | null;
+  userEmail: string | null;
+}
+
+export interface SyncMetadata {
+  spreadsheetId: string | null;
+  lastSyncTimestamp: number | null;
+  autoSyncEnabled: boolean;
+  syncIntervalMinutes: number;
+}
+
+export interface SyncStatus {
+  isSyncing: boolean;
+  lastSyncTime: number | null;
+  lastSyncError: string | null;
+}
+
+export interface AuthTokens {
+  accessToken: string | null;
+  expiresAt: number | null;
+  userEmail: string | null;
+}

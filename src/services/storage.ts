@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { Expense, SyncItem, Category } from '../types';
+import type { Expense, SyncItem, Category, SyncMetadata, AuthTokens } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ExpenseDB extends DBSchema {
@@ -17,10 +17,14 @@ interface ExpenseDB extends DBSchema {
     key: string;
     value: SyncItem;
   };
+  syncMetadata: {
+    key: string;
+    value: (SyncMetadata & { key: string }) | (AuthTokens & { key: string });
+  };
 }
 
 const DB_NAME = 'expense-manager-db';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 const DEFAULT_CATEGORIES: Omit<Category, 'id'>[] = [
   { name: 'Food', type: 'expense', isDefault: true },
@@ -59,6 +63,10 @@ export const initDB = (): Promise<IDBPDatabase<ExpenseDB>> => {
           DEFAULT_CATEGORIES.forEach(cat => {
             categoryStore.add({ ...cat, id: uuidv4() });
           });
+        }
+
+        if (!db.objectStoreNames.contains('syncMetadata')) {
+          db.createObjectStore('syncMetadata', { keyPath: 'key' });
         }
 
         // Migration for existing expenses
@@ -140,5 +148,42 @@ export const storage = {
   async clearSyncQueue(): Promise<void> {
     const db = await initDB();
     await db.clear('syncQueue');
+  },
+
+  // Sync Metadata Methods
+  async getSyncMetadata(): Promise<SyncMetadata> {
+    const db = await initDB();
+    const metadata = await db.get('syncMetadata', 'sync');
+    return (
+      (metadata as SyncMetadata) || {
+        spreadsheetId: null,
+        lastSyncTimestamp: null,
+        autoSyncEnabled: true,
+        syncIntervalMinutes: 5,
+      }
+    );
+  },
+
+  async setSyncMetadata(metadata: SyncMetadata): Promise<void> {
+    const db = await initDB();
+    await db.put('syncMetadata', { ...metadata, key: 'sync' });
+  },
+
+  // Auth Token Methods
+  async getAuthTokens(): Promise<AuthTokens> {
+    const db = await initDB();
+    const tokens = await db.get('syncMetadata', 'authTokens');
+    return (
+      (tokens as AuthTokens) || {
+        accessToken: null,
+        expiresAt: null,
+        userEmail: null,
+      }
+    );
+  },
+
+  async setAuthTokens(tokens: AuthTokens): Promise<void> {
+    const db = await initDB();
+    await db.put('syncMetadata', { ...tokens, key: 'authTokens' });
   },
 };

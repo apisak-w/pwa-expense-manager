@@ -45,6 +45,7 @@ A modern, offline-capable Progressive Web App for tracking income and expenses. 
 - **PWA**: vite-plugin-pwa with Workbox
 - **Testing**: Vitest + React Testing Library
 - **Date Handling**: Day.js
+- **Google Sheets Sync**: Real-time bidirectional sync with your personal Google Sheets
 - **Package Manager**: pnpm
 
 ## 🚀 Getting Started
@@ -53,6 +54,23 @@ A modern, offline-capable Progressive Web App for tracking income and expenses. 
 
 - Node.js >= 24.0.0
 - pnpm 10 or later
+- Google Cloud Platform Project (for Sheets Sync)
+
+### Google Sheets Setup
+
+To enable Google Sheets sync, you need to create a Google Cloud Project and obtain an OAuth 2.0 Client ID:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project
+3. Enable the **Google Sheets API** and **Google Drive API**
+4. Configure the OAuth Consent Screen (External user type)
+5. Create OAuth 2.0 Credentials (Web Application)
+   - Add authorized Javascript origins: `http://localhost:5173` (and your production URL)
+6. Copy the Client ID
+7. Create a `.env` file in the root directory:
+   ```bash
+   VITE_GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
+   ```
 
 ### Installation
 
