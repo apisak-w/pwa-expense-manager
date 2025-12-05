@@ -19,5 +19,4 @@ declare module 'virtual:pwa-register/react' {
   };
 }
 
-declare const __GITHUB_BUILD_NUMBER__: string | null;
 declare const __BUILD_TIME__: string;
