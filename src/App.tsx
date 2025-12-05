@@ -17,6 +17,7 @@ import {
 import { Button } from './components/ui/button';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
+import { Footer } from './components/Footer';
 
 function App(): React.JSX.Element {
   const { expenses, addExpense, deleteExpense, toggleCleared } = useExpenses();
@@ -68,6 +69,8 @@ function App(): React.JSX.Element {
             onToggleCleared={toggleCleared}
           />
         </div>
+
+        <Footer />
       </div>
 
       <OfflineIndicator />

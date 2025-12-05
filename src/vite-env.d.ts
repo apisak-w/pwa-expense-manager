@@ -18,3 +18,6 @@ declare module 'virtual:pwa-register/react' {
     updateServiceWorker: (reloadPage?: boolean) => Promise<void>;
   };
 }
+
+declare const __APP_VERSION__: string;
+declare const __BUILD_TIME__: string;

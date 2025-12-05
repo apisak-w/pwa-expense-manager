@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import dayjs from 'dayjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -18,6 +19,12 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(
+      process.env.GITHUB_RUN_NUMBER || process.env.npm_package_version
+    ),
+    __BUILD_TIME__: JSON.stringify(dayjs().toISOString()),
   },
   plugins: [
     react(),
