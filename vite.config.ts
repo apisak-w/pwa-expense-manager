@@ -21,9 +21,7 @@ export default defineConfig({
     },
   },
   define: {
-    __APP_VERSION__: JSON.stringify(
-      process.env.GITHUB_RUN_NUMBER || process.env.npm_package_version
-    ),
+    __GITHUB_BUILD_NUMBER__: JSON.stringify(process.env.GITHUB_RUN_NUMBER || null),
     __BUILD_TIME__: JSON.stringify(dayjs().toISOString()),
   },
   plugins: [
