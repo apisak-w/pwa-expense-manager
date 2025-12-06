@@ -34,85 +34,103 @@ export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): Rea
               !expense.synced ? 'opacity-75 italic' : ''
             }`}
           >
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-3">
+                {/* Top Row: Type, Category, Amount */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
                     {expense.type === 'income' ? (
-                      <TrendingUp className="h-4 w-4 text-green-500 shrink-0" />
+                      <TrendingUp className="h-5 w-5 text-green-500 shrink-0" />
                     ) : (
-                      <TrendingDown className="h-4 w-4 text-red-500 shrink-0" />
+                      <TrendingDown className="h-5 w-5 text-red-500 shrink-0" />
                     )}
-                    <span className="font-semibold text-base text-foreground truncate">
-                      {expense.description}
-                    </span>
-                    <Badge variant="secondary" className="text-xs font-medium shrink-0">
+                    <Badge variant="outline" className="text-xs font-medium">
                       {expense.category}
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span>{dayjs(expense.date).format('MMM D, YYYY')}</span>
-                    {expense.isCleared ? (
-                      <span className="text-xs bg-green-500/10 text-green-600 px-1.5 py-0.5 rounded">
-                        Cleared
-                      </span>
-                    ) : (
-                      <span className="text-xs bg-yellow-500/10 text-yellow-600 px-1.5 py-0.5 rounded">
-                        Uncleared
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 shrink-0">
                   <span
-                    className={`font-bold text-xl ${expense.type === 'income' ? 'text-green-600' : 'text-foreground'}`}
+                    className={`font-bold text-lg ${
+                      expense.type === 'income' ? 'text-green-600' : 'text-foreground'
+                    }`}
                   >
                     {expense.type === 'income' ? '+' : ''}${expense.amount.toFixed(2)}
                   </span>
+                </div>
+
+                {/* Middle Row: Description */}
+                <div className="font-medium text-base truncate">{expense.description}</div>
+
+                {/* Bottom Row: Date, Cleared, Actions */}
+                <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                  <div className="text-sm text-muted-foreground italic">
+                    {dayjs(expense.createdAt || expense.updatedAt || expense.date).format(
+                      'MMM D, YYYY h:mm A'
+                    )}
+                  </div>
 
                   <div className="flex items-center gap-1">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={e => {
-                            e.stopPropagation();
-                            onToggleCleared(expense.id);
-                          }}
-                          className={`h-9 w-9 ${expense.isCleared ? 'text-green-600' : 'text-muted-foreground'}`}
-                        >
-                          {expense.isCleared ? (
-                            <CheckCircle2 className="h-5 w-5" />
-                          ) : (
-                            <Circle className="h-5 w-5" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{expense.isCleared ? 'Mark as uncleared' : 'Mark as cleared'}</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    {expense.isCleared ? (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 h-5 bg-green-500/10 text-green-600 hover:bg-green-500/20 border-0"
+                      >
+                        Cleared
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 h-5 bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20 border-0"
+                      >
+                        Uncleared
+                      </Badge>
+                    )}
 
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={e => {
-                            e.stopPropagation();
-                            onDelete(expense.id);
-                          }}
-                          className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                          aria-label="Delete transaction"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Delete transaction</p>
-                      </TooltipContent>
-                    </Tooltip>
+                    <div className="flex items-center gap-0.5 ml-1">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className={`h-8 w-8 ${
+                              expense.isCleared ? 'text-green-600' : 'text-muted-foreground'
+                            }`}
+                            onClick={e => {
+                              e.stopPropagation();
+                              onToggleCleared(expense.id);
+                            }}
+                          >
+                            {expense.isCleared ? (
+                              <CheckCircle2 className="h-4 w-4" />
+                            ) : (
+                              <Circle className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{expense.isCleared ? 'Mark as uncleared' : 'Mark as cleared'}</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            onClick={e => {
+                              e.stopPropagation();
+                              onDelete(expense.id);
+                            }}
+                            aria-label="Delete transaction"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete transaction</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   </div>
                 </div>
               </div>
