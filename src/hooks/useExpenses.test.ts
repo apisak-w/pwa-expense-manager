@@ -19,6 +19,7 @@ vi.mock('../services/storage', () => ({
 vi.mock('../services/sync', () => ({
   syncService: {
     processQueue: vi.fn().mockResolvedValue(undefined),
+    subscribe: vi.fn().mockReturnValue(() => {}),
   },
 }));
 
