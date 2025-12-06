@@ -4,6 +4,7 @@ import { useExpenses } from '../hooks/useExpenses';
 import { useCategories } from '../hooks/useCategories';
 import { ExpenseList } from '../components/ExpenseList';
 import { Input } from '../components/ui/input';
+
 import {
   Select,
   SelectContent,
@@ -127,10 +128,11 @@ export function Transactions(): React.JSX.Element {
 
           <div className="col-span-2 md:col-span-1">
             <Input
+              id="month"
               type="month"
               value={selectedMonth}
               onChange={e => setSelectedMonth(e.target.value)}
-              className="w-full"
+              className="h-11 text-base block w-full appearance-none text-left"
             />
           </div>
         </div>
