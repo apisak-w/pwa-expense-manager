@@ -1,4 +1,5 @@
 import type { Expense } from '../types';
+import dayjs from 'dayjs';
 
 const SPREADSHEET_NAME = 'Expense Manager Sync';
 
@@ -124,11 +125,21 @@ export class GoogleSheetsService {
    */
   private async setupHeaders(): Promise<void> {
     const headers = [
-      ['ID', 'Date', 'Type', 'Category', 'Amount', 'Description', 'Cleared', 'Updated At'],
+      [
+        'ID',
+        'Date',
+        'Type',
+        'Category',
+        'Amount',
+        'Description',
+        'Cleared',
+        'Updated At',
+        'Created At',
+      ],
     ];
 
     await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A1:H1?valueInputOption=RAW`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A1:I1?valueInputOption=RAW`,
       {
         method: 'PUT',
         headers: {
@@ -181,7 +192,7 @@ export class GoogleSheetsService {
     }
 
     const response = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A2:H`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A2:I`,
       {
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
@@ -196,17 +207,34 @@ export class GoogleSheetsService {
     const data = await response.json();
     const rows = data.values || [];
 
-    return rows.map((row: string[]) => ({
-      id: row[0],
-      date: row[1],
-      type: row[2] as 'income' | 'expense',
-      category: row[3],
-      amount: parseFloat(row[4]),
-      description: row[5],
-      isCleared: row[6] === 'true',
-      updatedAt: parseInt(row[7]),
-      synced: true,
-    }));
+    return rows.map((row: string[]) => {
+      const updatedAtRaw = row[7];
+      const createdAtRaw = row[8];
+
+      // Handle both number (old format) and ISO string (new format)
+      const updatedAt = !isNaN(Number(updatedAtRaw))
+        ? parseInt(updatedAtRaw)
+        : dayjs(updatedAtRaw).valueOf();
+
+      const createdAt = createdAtRaw
+        ? !isNaN(Number(createdAtRaw))
+          ? parseInt(createdAtRaw)
+          : dayjs(createdAtRaw).valueOf()
+        : undefined;
+
+      return {
+        id: row[0],
+        date: row[1],
+        type: row[2] as 'income' | 'expense',
+        category: row[3],
+        amount: parseFloat(row[4]),
+        description: row[5],
+        isCleared: row[6] === 'true',
+        updatedAt,
+        createdAt,
+        synced: true,
+      };
+    });
   }
 
   /**
@@ -219,7 +247,7 @@ export class GoogleSheetsService {
 
     // Clear existing data (except header)
     await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A2:H:clear`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A2:I:clear`,
       {
         method: 'POST',
         headers: {
@@ -239,12 +267,13 @@ export class GoogleSheetsService {
       expense.amount.toString(),
       expense.description,
       expense.isCleared.toString(),
-      expense.updatedAt.toString(),
+      dayjs(expense.updatedAt).toISOString(),
+      expense.createdAt ? dayjs(expense.createdAt).toISOString() : '',
     ]);
 
     // Write all rows
     await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A2:H?valueInputOption=RAW`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A2:I?valueInputOption=RAW`,
       {
         method: 'PUT',
         headers: {
@@ -286,11 +315,12 @@ export class GoogleSheetsService {
       expense.amount.toString(),
       expense.description,
       expense.isCleared.toString(),
-      expense.updatedAt.toString(),
+      dayjs(expense.updatedAt).toISOString(),
+      expense.createdAt ? dayjs(expense.createdAt).toISOString() : '',
     ];
 
     await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A${sheetRow}:H${sheetRow}?valueInputOption=RAW`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A${sheetRow}:I${sheetRow}?valueInputOption=RAW`,
       {
         method: 'PUT',
         headers: {
@@ -316,11 +346,12 @@ export class GoogleSheetsService {
       expense.amount.toString(),
       expense.description,
       expense.isCleared.toString(),
-      expense.updatedAt.toString(),
+      dayjs(expense.updatedAt).toISOString(),
+      expense.createdAt ? dayjs(expense.createdAt).toISOString() : '',
     ];
 
     await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A:H:append?valueInputOption=RAW`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetId}/values/Transactions!A:I:append?valueInputOption=RAW`,
       {
         method: 'POST',
         headers: {

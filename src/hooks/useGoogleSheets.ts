@@ -80,7 +80,20 @@ export function useGoogleSheets(): {
       }
     }
 
-    await googleSheetsService.writeTransactions(Array.from(merged.values()));
+    // Convert to array and sort
+    const sortedTransactions = Array.from(merged.values()).sort((a, b) => {
+      // Primary sort: Date (descending)
+      const dateDiff = dayjs(b.date).valueOf() - dayjs(a.date).valueOf();
+      if (dateDiff !== 0) return dateDiff;
+
+      // Secondary sort: Creation time (descending)
+      // Fallback to updatedAt if createdAt is missing
+      const bTime = b.createdAt || b.updatedAt;
+      const aTime = a.createdAt || a.updatedAt;
+      return bTime - aTime;
+    });
+
+    await googleSheetsService.writeTransactions(sortedTransactions);
 
     // Handle deletions (transactions in remote but deleted locally)
     // This is complex and requires tracking deletions separately
