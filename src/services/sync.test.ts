@@ -1,6 +1,6 @@
 import { syncService } from './sync';
 import { storage } from './storage';
-import { api } from './api';
+import { googleSheetsService } from './google-sheets';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Expense } from '../types';
 
@@ -10,14 +10,14 @@ vi.mock('./storage', () => ({
     getSyncQueue: vi.fn(),
     removeFromSyncQueue: vi.fn(),
     addExpense: vi.fn(),
+    getAuthTokens: vi.fn(),
   },
 }));
 
-vi.mock('./api', () => ({
-  api: {
-    createExpense: vi.fn(),
-    updateExpense: vi.fn(),
-    deleteExpense: vi.fn(),
+vi.mock('./google-sheets', () => ({
+  googleSheetsService: {
+    updateTransaction: vi.fn(),
+    deleteTransaction: vi.fn(),
   },
 }));
 
@@ -38,59 +38,96 @@ describe('Sync Service', () => {
     vi.clearAllMocks();
   });
 
-  it('processes create action', async () => {
-    const syncItem = {
-      id: 'sync-1',
-      action: 'create' as const,
-      payload: mockExpense,
-      timestamp: 1234567890,
-    };
+  describe('when connected to Google Sheets', () => {
+    beforeEach(() => {
+      vi.mocked(storage.getAuthTokens).mockResolvedValue({
+        accessToken: 'mock-token',
+        expiresAt: Date.now() + 3600000,
+        userEmail: 'test@example.com',
+      });
+    });
 
-    vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
+    it('processes create action using Google Sheets service', async () => {
+      const syncItem = {
+        id: 'sync-1',
+        action: 'create' as const,
+        payload: mockExpense,
+        timestamp: 1234567890,
+      };
 
-    await syncService.processQueue();
+      vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
 
-    expect(api.createExpense).toHaveBeenCalledWith(mockExpense);
-    expect(storage.addExpense).toHaveBeenCalledWith({ ...mockExpense, synced: true });
-    expect(storage.removeFromSyncQueue).toHaveBeenCalledWith('sync-1');
+      await syncService.processQueue();
+
+      expect(googleSheetsService.updateTransaction).toHaveBeenCalledWith(mockExpense);
+      expect(storage.addExpense).toHaveBeenCalledWith({ ...mockExpense, synced: true });
+      expect(storage.removeFromSyncQueue).toHaveBeenCalledWith('sync-1');
+    });
+
+    it('processes update action using Google Sheets service', async () => {
+      const syncItem = {
+        id: 'sync-2',
+        action: 'update' as const,
+        payload: mockExpense,
+        timestamp: 1234567890,
+      };
+
+      vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
+
+      await syncService.processQueue();
+
+      expect(googleSheetsService.updateTransaction).toHaveBeenCalledWith(mockExpense);
+      expect(storage.addExpense).toHaveBeenCalledWith({ ...mockExpense, synced: true });
+      expect(storage.removeFromSyncQueue).toHaveBeenCalledWith('sync-2');
+    });
+
+    it('processes delete action using Google Sheets service', async () => {
+      const syncItem = {
+        id: 'sync-3',
+        action: 'delete' as const,
+        payload: { id: '1' },
+        timestamp: 1234567890,
+      };
+
+      vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
+
+      await syncService.processQueue();
+
+      expect(googleSheetsService.deleteTransaction).toHaveBeenCalledWith('1');
+      expect(storage.removeFromSyncQueue).toHaveBeenCalledWith('sync-3');
+    });
   });
 
-  it('processes update action', async () => {
-    const syncItem = {
-      id: 'sync-2',
-      action: 'update' as const,
-      payload: mockExpense,
-      timestamp: 1234567890,
-    };
+  describe('when NOT connected to Google Sheets', () => {
+    beforeEach(() => {
+      vi.mocked(storage.getAuthTokens).mockResolvedValue({
+        accessToken: null,
+        expiresAt: null,
+        userEmail: null,
+      });
+    });
 
-    vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
+    it('does NOT process queue', async () => {
+      const syncItem = {
+        id: 'sync-1',
+        action: 'create' as const,
+        payload: mockExpense,
+        timestamp: 1234567890,
+      };
 
-    await syncService.processQueue();
+      vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
 
-    expect(api.updateExpense).toHaveBeenCalledWith(mockExpense);
-    expect(storage.addExpense).toHaveBeenCalledWith({ ...mockExpense, synced: true });
-    expect(storage.removeFromSyncQueue).toHaveBeenCalledWith('sync-2');
-  });
+      await syncService.processQueue();
 
-  it('processes delete action', async () => {
-    const syncItem = {
-      id: 'sync-3',
-      action: 'delete' as const,
-      payload: { id: '1' },
-      timestamp: 1234567890,
-    };
-
-    vi.mocked(storage.getSyncQueue).mockResolvedValue([syncItem]);
-
-    await syncService.processQueue();
-
-    expect(api.deleteExpense).toHaveBeenCalledWith('1');
-    expect(storage.removeFromSyncQueue).toHaveBeenCalledWith('sync-3');
+      expect(googleSheetsService.updateTransaction).not.toHaveBeenCalled();
+      expect(storage.addExpense).not.toHaveBeenCalled();
+      expect(storage.removeFromSyncQueue).not.toHaveBeenCalled();
+    });
   });
 
   it('does nothing if queue is empty', async () => {
     vi.mocked(storage.getSyncQueue).mockResolvedValue([]);
     await syncService.processQueue();
-    expect(api.createExpense).not.toHaveBeenCalled();
+    expect(googleSheetsService.updateTransaction).not.toHaveBeenCalled();
   });
 });

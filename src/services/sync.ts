@@ -1,6 +1,6 @@
 import { storage } from './storage';
-import { api } from './api';
-import type { Expense, SyncItem } from '../types';
+import type { SyncStrategy } from './strategies/SyncStrategy';
+import { GoogleSheetsSyncStrategy } from './strategies/GoogleSheetsSyncStrategy';
 
 export const syncService = {
   async processQueue(): Promise<void> {
@@ -9,9 +9,22 @@ export const syncService = {
 
     console.log(`Syncing ${queue.length} items...`);
 
+    // Determine strategy
+    const tokens = await storage.getAuthTokens();
+    const isConnected = !!tokens.accessToken;
+
+    if (!isConnected) {
+      console.log('Not connected to Google Sheets, skipping sync');
+      return;
+    }
+
+    const strategy: SyncStrategy = new GoogleSheetsSyncStrategy();
+
+    console.log('Using strategy: Google Sheets');
+
     for (const item of queue) {
       try {
-        await this.processItem(item);
+        await strategy.syncItem(item);
         await storage.removeFromSyncQueue(item.id);
       } catch (error) {
         console.error('Failed to sync item', item, error);
@@ -20,23 +33,5 @@ export const syncService = {
     }
 
     console.log('Sync complete');
-  },
-
-  async processItem(item: SyncItem): Promise<void> {
-    switch (item.action) {
-      case 'create':
-        await api.createExpense(item.payload as Expense);
-        // Update local DB to mark as synced
-        await storage.addExpense({ ...(item.payload as Expense), synced: true });
-        break;
-      case 'update':
-        await api.updateExpense(item.payload as Expense);
-        await storage.addExpense({ ...(item.payload as Expense), synced: true });
-        break;
-      case 'delete':
-        await api.deleteExpense((item.payload as { id: string }).id);
-        // Already deleted from local DB, nothing to update
-        break;
-    }
   },
 };
