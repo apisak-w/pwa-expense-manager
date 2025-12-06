@@ -36,12 +36,20 @@ export function useExpenses(): {
     loadExpenses();
   }, [loadExpenses]);
 
+  // Subscribe to sync updates
+  useEffect(() => {
+    const unsubscribe = syncService.subscribe(() => {
+      loadExpenses();
+    });
+    return unsubscribe;
+  }, [loadExpenses]);
+
   // Sync when coming online
   useEffect(() => {
     if (isOnline) {
-      syncService.processQueue().then(() => loadExpenses());
+      syncService.processQueue();
     }
-  }, [isOnline, loadExpenses]);
+  }, [isOnline]);
 
   const addExpense = async (
     expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt' | 'createdAt'>

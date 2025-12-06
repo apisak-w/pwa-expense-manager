@@ -1,11 +1,28 @@
 import type { SyncStrategy } from './SyncStrategy';
 import type { SyncItem, Expense } from '../../types';
 import { googleSheetsService } from '../google-sheets';
+import { googleAuthService } from '../google-auth';
 import { storage } from '../storage';
 
 export class GoogleSheetsSyncStrategy implements SyncStrategy {
   async syncItem(item: SyncItem): Promise<void> {
     const expense = item.payload as Expense;
+
+    // Ensure service is initialized with a valid token
+    const accessToken = await googleAuthService.getAccessToken();
+    if (!accessToken) {
+      throw new Error('No access token available for Google Sheets sync');
+    }
+    googleSheetsService.setAccessToken(accessToken);
+
+    const metadata = await storage.getSyncMetadata();
+    if (metadata.spreadsheetId) {
+      googleSheetsService.setSpreadsheetId(metadata.spreadsheetId);
+    } else {
+      // Initialize spreadsheet if ID is missing
+      const sheetData = await googleSheetsService.initializeSpreadsheet();
+      await storage.setSyncMetadata({ ...metadata, spreadsheetId: sheetData.spreadsheetId });
+    }
 
     switch (item.action) {
       case 'create':
