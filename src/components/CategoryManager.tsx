@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useCategories } from '../hooks/useCategories';
 import type { TransactionType } from '../types';
-import { Plus, Trash2, X, Search, Pencil, Check } from 'lucide-react';
+import { Check, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

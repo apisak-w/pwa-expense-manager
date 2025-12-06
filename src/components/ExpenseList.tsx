@@ -1,6 +1,6 @@
 import type { Expense } from '../types';
 import dayjs from 'dayjs';
-import { CheckCircle2, Circle, Clock, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';

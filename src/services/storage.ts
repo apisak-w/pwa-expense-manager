@@ -1,5 +1,5 @@
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { Expense, SyncItem, Category, SyncMetadata, AuthTokens } from '../types';
+import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
+import type { AuthTokens, Category, Expense, SyncItem, SyncMetadata } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ExpenseDB extends DBSchema {

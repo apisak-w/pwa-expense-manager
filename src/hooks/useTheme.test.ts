@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useTheme } from './useTheme';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('useTheme Hook', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

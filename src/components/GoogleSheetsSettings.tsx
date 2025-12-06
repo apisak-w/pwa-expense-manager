@@ -4,9 +4,9 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { Loader2, Cloud, CloudOff, ExternalLink, Check, AlertCircle } from 'lucide-react';
+import { AlertCircle, Check, Cloud, CloudOff, ExternalLink, Loader2 } from 'lucide-react';
 import { storage } from '../services/storage';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import formatLastSync from '../lib/time';
 
 export function GoogleSheetsSettings(): React.JSX.Element {

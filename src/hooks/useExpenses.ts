@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { storage } from '../services/storage';
 import type { Expense, SyncItem } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import { syncService } from '../services/sync';
-import { useNetworkStatus } from './useNetworkStatus';
 import dayjs from 'dayjs';
+import { useNetworkStatus } from './useNetworkStatus';
 
 export function useExpenses(): {
   expenses: Expense[];
@@ -17,7 +17,19 @@ export function useExpenses(): {
 
   const loadExpenses = useCallback(async () => {
     const data = await storage.getExpenses();
-    setExpenses(data.sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf()));
+    setExpenses(
+      data.sort((a, b) => {
+        // Primary sort: Date (descending)
+        const dateDiff = dayjs(b.date).valueOf() - dayjs(a.date).valueOf();
+        if (dateDiff !== 0) return dateDiff;
+
+        // Secondary sort: Creation time (descending)
+        // Fallback to updatedAt if createdAt is missing
+        const bTime = b.createdAt || b.updatedAt;
+        const aTime = a.createdAt || a.updatedAt;
+        return bTime - aTime;
+      })
+    );
   }, []);
 
   useEffect(() => {
@@ -32,13 +44,15 @@ export function useExpenses(): {
   }, [isOnline, loadExpenses]);
 
   const addExpense = async (
-    expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt'>
+    expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt' | 'createdAt'>
   ): Promise<void> => {
+    const now = dayjs().valueOf();
     const newExpense: Expense = {
       ...expenseData,
       id: uuidv4(),
       synced: false,
-      updatedAt: dayjs().valueOf(),
+      updatedAt: now,
+      createdAt: now,
     };
 
     await storage.addExpense(newExpense);

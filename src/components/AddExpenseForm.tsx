@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { Expense, TransactionType } from '../types';
 import dayjs from 'dayjs';
 import { Button } from './ui/button';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useCategories } from '../hooks/useCategories';
 import { CategoryManager } from './CategoryManager';
-import { Settings, CheckCircle2, Circle } from 'lucide-react';
+import { CheckCircle2, Circle, Settings } from 'lucide-react';
 
 interface Props {
   onAdd: (expense: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => Promise<void>;

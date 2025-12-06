@@ -15,6 +15,7 @@ export interface Expense {
   description: string;
   synced: boolean;
   updatedAt: number; // timestamp
+  createdAt?: number; // timestamp - optional for backward compatibility
   type: TransactionType;
   isCleared: boolean;
 }

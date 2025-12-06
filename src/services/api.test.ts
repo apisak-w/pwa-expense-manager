@@ -1,5 +1,5 @@
 import { api } from './api';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { Expense } from '../types';
 
 describe('API Service', () => {

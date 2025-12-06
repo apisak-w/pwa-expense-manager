@@ -1,6 +1,6 @@
 import { storage } from './storage';
 import { api } from './api';
-import type { SyncItem, Expense } from '../types';
+import type { Expense, SyncItem } from '../types';
 
 export const syncService = {
   async processQueue(): Promise<void> {

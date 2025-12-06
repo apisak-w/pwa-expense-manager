@@ -1,7 +1,7 @@
 import { syncService } from './sync';
 import { storage } from './storage';
 import { api } from './api';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Expense } from '../types';
 
 // Mock dependencies

@@ -1,6 +1,6 @@
 import { useGoogleSheets } from '../hooks/useGoogleSheets';
 import { useGoogleAuth } from '../hooks/useGoogleAuth';
-import { Cloud, Loader2, AlertCircle } from 'lucide-react';
+import { AlertCircle, Cloud, Loader2 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import formatLastSync from '../lib/time';
 

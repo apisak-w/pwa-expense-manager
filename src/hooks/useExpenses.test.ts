@@ -1,8 +1,8 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { useExpenses } from './useExpenses';
 import { storage } from '../services/storage';
 import { syncService } from '../services/sync';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Expense } from '../types';
 
 // Mock dependencies

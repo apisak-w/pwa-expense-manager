@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useRestrictedMode } from './useRestrictedMode';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock useNetworkStatus
 vi.mock('./useNetworkStatus', () => ({

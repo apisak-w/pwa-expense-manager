@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { googleAuthService } from '../services/google-auth';
 import type { GoogleAuthState } from '../types';
 

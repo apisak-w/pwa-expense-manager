@@ -1,5 +1,5 @@
-import { storage, initDB } from './storage';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { initDB, storage } from './storage';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { Expense } from '../types';
 
 describe('Storage Service', () => {
