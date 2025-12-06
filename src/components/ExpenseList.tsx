@@ -1,6 +1,6 @@
 import type { Expense } from '../types';
 import dayjs from 'dayjs';
-import { CheckCircle2, Circle, Clock, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
+import { CheckCircle2, Circle, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -30,7 +30,9 @@ export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): Rea
         {expenses.map(expense => (
           <Card
             key={expense.id}
-            className="transition-all hover:shadow-md border border-border bg-card"
+            className={`transition-all hover:shadow-md border border-border bg-card ${
+              !expense.synced ? 'opacity-75 italic' : ''
+            }`}
           >
             <CardContent className="p-5">
               <div className="flex items-center justify-between gap-4">
@@ -74,7 +76,10 @@ export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): Rea
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onToggleCleared(expense.id)}
+                          onClick={e => {
+                            e.stopPropagation();
+                            onToggleCleared(expense.id);
+                          }}
                           className={`h-9 w-9 ${expense.isCleared ? 'text-green-600' : 'text-muted-foreground'}`}
                         >
                           {expense.isCleared ? (
@@ -89,36 +94,15 @@ export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): Rea
                       </TooltipContent>
                     </Tooltip>
 
-                    {expense.synced ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="h-9 w-9 flex items-center justify-center cursor-help">
-                            <CheckCircle2 className="h-5 w-5 text-muted-foreground/50" />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Synced</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="h-9 w-9 flex items-center justify-center cursor-help">
-                            <Clock className="h-5 w-5 text-yellow-600" />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Pending sync</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onDelete(expense.id)}
+                          onClick={e => {
+                            e.stopPropagation();
+                            onDelete(expense.id);
+                          }}
                           className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                           aria-label="Delete transaction"
                         >
