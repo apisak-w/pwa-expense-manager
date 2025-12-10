@@ -5,6 +5,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Heading Font Options - All imported for easy comparison */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
@@ -80,7 +82,7 @@
     @apply border-border;
   }
 
-  /* Ensure all text elements use Libre Baskerville for consistency */
+  /* Ensure all text elements use user preferred font for consistency */
   button,
   input,
   select,
@@ -101,16 +103,18 @@
    * Option 4: Lora (Contemporary serif, good readability)
    * Option 5: Merriweather (Modern serif, excellent readability)
    * Option 6: Source Serif Pro (Professional, clean serif)
+   * Option 7: Zilla Slab (Current)
+   * Option 8: Inter (Clean sans-serif)
    */
 
   body {
     @apply bg-background text-foreground;
 
     /* Option 1: Libre Baskerville (Same as headings) */
-    font-family: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif;
+    /* font-family: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif; */
     font-weight: 500;
 
-    /* Option 2: Noto Serif (Current) */
+    /* Option 2: Noto Serif */
     /* font-family: 'Noto Serif', 'Georgia', 'Times New Roman', serif; */
 
     /* Option 3: Crimson Text */
@@ -124,6 +128,12 @@
 
     /* Option 6: Source Serif Pro */
     /* font-family: 'Source Serif Pro', 'Georgia', 'Times New Roman', serif; */
+
+    /* Option 7: Zilla Slab */
+    /* font-family: 'Zilla Slab', 'Georgia', 'Times New Roman', serif; */
+
+    /* Option 8: Inter */
+    font-family: 'Inter', sans-serif;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -171,6 +181,7 @@
    * Option 4: Crimson Pro (Traditional, warm)
    * Option 5: Bitter (Contemporary, strong serifs)
    * Option 6: Libre Baskerville (Classic, elegant)
+   * Option 7: Zilla Slab (Consistent with body)
    */
 
   h1,
@@ -195,7 +206,10 @@
     /* font-family: 'Bitter', 'Georgia', serif; */
 
     /* Option 6: Libre Baskerville */
-    font-family: 'Libre Baskerville', 'Georgia', serif;
+    /* font-family: 'Libre Baskerville', 'Georgia', serif; */
+
+    /* Option 7: Zilla Slab */
+    font-family: 'Zilla Slab', 'Georgia', serif;
 
     font-weight: 600;
     letter-spacing: -0.01em;

@@ -54,6 +54,10 @@ export default {
           '5': 'hsl(var(--chart-5))',
         },
       },
+      fontFamily: {
+        'zilla-slab': ['"Zilla Slab"', 'serif'],
+        'inter': ['"Inter"', 'sans-serif'],
+      },
     },
   },
   plugins: [],
