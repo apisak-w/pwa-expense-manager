@@ -29,7 +29,14 @@ export function useGoogleSheets(): {
         ...prev,
         lastSyncTime: metadata.lastSyncTimestamp,
       }));
-      setIsAutoSyncEnabled(metadata.autoSyncEnabled);
+      // default to enabled if metadata is undefined (turn on auto-sync by default)
+      const enabled = metadata.autoSyncEnabled ?? true;
+      setIsAutoSyncEnabled(enabled);
+
+      // persist default if it wasn't present
+      if (metadata.autoSyncEnabled === undefined) {
+        storage.setSyncMetadata({ ...metadata, autoSyncEnabled: enabled }).catch(() => {});
+      }
     });
   }, []);
 

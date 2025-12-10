@@ -43,7 +43,10 @@ export function Dashboard(): React.JSX.Element {
                   <Settings className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
+              <DialogContent
+                className="w-full sm:max-w-[500px] \
+                left-0 top-auto bottom-0 translate-x-0 translate-y-0 sm:left-[50%] sm:top-[50%] sm:bottom-auto sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg rounded-t-lg p-4 sm:p-6"
+              >
                 <DialogHeader>
                   <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
