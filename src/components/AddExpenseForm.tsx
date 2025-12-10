@@ -123,6 +123,7 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
               <Input
                 id="amount"
                 type="number"
+                inputMode="decimal"
                 step="0.01"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
