@@ -7,6 +7,18 @@ export interface Category {
   isDefault?: boolean;
 }
 
+export interface Label {
+  id: string;
+  name: string;
+  createdAt: number;
+}
+
+export interface TransactionLabelMap {
+  id: string;
+  transactionId: string;
+  labelId: string;
+}
+
 export interface Expense {
   id: string;
   amount: number;

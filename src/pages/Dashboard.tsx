@@ -7,7 +7,7 @@ import { useRestrictedMode } from '../hooks/useRestrictedMode';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ArrowRight, Settings } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,14 +16,34 @@ import {
   DialogTrigger,
 } from '../components/ui/dialog';
 import { GoogleSheetsSettings } from '../components/GoogleSheetsSettings';
+import { storage } from '../services/storage';
+import type { Label } from '../types';
 
 export function Dashboard(): React.JSX.Element {
   const { expenses, addExpense, deleteExpense, toggleCleared } = useExpenses();
   const { isRestricted } = useRestrictedMode();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [labelsMap, setLabelsMap] = useState<Record<string, Label[]>>({});
+  const expensesIdsRef = useRef<string[]>([]);
 
   // Show only recent 5 transactions on dashboard
   const recentExpenses = expenses.slice(0, 5);
+
+  useEffect(() => {
+    const currentIds = recentExpenses.map(e => e.id).sort();
+    if (JSON.stringify(currentIds) === JSON.stringify(expensesIdsRef.current)) return;
+    expensesIdsRef.current = currentIds;
+
+    const fetchLabelsForExpenses = async (): Promise<void> => {
+      const map: Record<string, Label[]> = {};
+      for (const expense of recentExpenses) {
+        const expenseLabels = await storage.getLabelsForTransaction(expense.id);
+        map[expense.id] = expenseLabels;
+      }
+      setLabelsMap(map);
+    };
+    fetchLabelsForExpenses();
+  }, [recentExpenses]); // Only re-fetch when expenses change
 
   return (
     <div className="pb-20 max-w-3xl mx-auto px-6 py-12">
@@ -78,6 +98,7 @@ export function Dashboard(): React.JSX.Element {
           expenses={recentExpenses}
           onDelete={deleteExpense}
           onToggleCleared={toggleCleared}
+          labelsMap={labelsMap}
         />
       </div>
 
