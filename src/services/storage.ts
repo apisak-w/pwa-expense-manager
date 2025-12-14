@@ -1,5 +1,13 @@
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
-import type { AuthTokens, Category, Expense, SyncItem, SyncMetadata } from '../types';
+import type {
+  AuthTokens,
+  Category,
+  Expense,
+  SyncItem,
+  SyncMetadata,
+  Label,
+  TransactionLabelMap,
+} from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 interface ExpenseDB extends DBSchema {
@@ -13,6 +21,15 @@ interface ExpenseDB extends DBSchema {
     value: Category;
     indexes: { type: string };
   };
+  labels: {
+    key: string;
+    value: Label;
+  };
+  transactionLabelMap: {
+    key: string;
+    value: TransactionLabelMap;
+    indexes: { transactionId: string; labelId: string };
+  };
   syncQueue: {
     key: string;
     value: SyncItem;
@@ -24,7 +41,7 @@ interface ExpenseDB extends DBSchema {
 }
 
 const DB_NAME = 'expense-manager-db';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 const DEFAULT_CATEGORIES: Omit<Category, 'id'>[] = [
   { name: 'Food', type: 'expense', isDefault: true },
@@ -67,6 +84,16 @@ export const initDB = (): Promise<IDBPDatabase<ExpenseDB>> => {
 
         if (!db.objectStoreNames.contains('syncMetadata')) {
           db.createObjectStore('syncMetadata', { keyPath: 'key' });
+        }
+
+        if (!db.objectStoreNames.contains('labels')) {
+          db.createObjectStore('labels', { keyPath: 'id' });
+        }
+
+        if (!db.objectStoreNames.contains('transactionLabelMap')) {
+          const mapStore = db.createObjectStore('transactionLabelMap', { keyPath: 'id' });
+          mapStore.createIndex('transactionId', 'transactionId');
+          mapStore.createIndex('labelId', 'labelId');
         }
 
         // Migration for existing expenses
@@ -127,6 +154,61 @@ export const storage = {
   async deleteCategory(id: string): Promise<void> {
     const db = await initDB();
     await db.delete('categories', id);
+  },
+
+  // Label Methods
+  async getLabels(): Promise<Label[]> {
+    const db = await initDB();
+    return db.getAll('labels');
+  },
+
+  async addLabel(label: Label): Promise<void> {
+    const db = await initDB();
+    await db.put('labels', label);
+  },
+
+  async deleteLabel(id: string): Promise<void> {
+    const db = await initDB();
+    await db.delete('labels', id);
+  },
+
+  // Transaction Label Map Methods
+  async addTransactionLabelMap(map: TransactionLabelMap): Promise<void> {
+    const db = await initDB();
+    await db.put('transactionLabelMap', map);
+  },
+
+  async getTransactionLabelMapsByTransaction(
+    transactionId: string
+  ): Promise<TransactionLabelMap[]> {
+    const db = await initDB();
+    return db.getAllFromIndex('transactionLabelMap', 'transactionId', transactionId);
+  },
+
+  async getTransactionLabelMapsByLabel(labelId: string): Promise<TransactionLabelMap[]> {
+    const db = await initDB();
+    return db.getAllFromIndex('transactionLabelMap', 'labelId', labelId);
+  },
+
+  async deleteTransactionLabelMap(id: string): Promise<void> {
+    const db = await initDB();
+    await db.delete('transactionLabelMap', id);
+  },
+
+  async deleteTransactionLabelMapsByTransaction(transactionId: string): Promise<void> {
+    const db = await initDB();
+    const maps = await db.getAllFromIndex('transactionLabelMap', 'transactionId', transactionId);
+    const tx = db.transaction('transactionLabelMap', 'readwrite');
+    await Promise.all(maps.map(map => tx.store.delete(map.id)));
+    await tx.done;
+  },
+
+  async getLabelsForTransaction(transactionId: string): Promise<Label[]> {
+    const db = await initDB();
+    const maps = await db.getAllFromIndex('transactionLabelMap', 'transactionId', transactionId);
+    const labelIds = maps.map(m => m.labelId);
+    const labels = await Promise.all(labelIds.map(id => db.get('labels', id)));
+    return labels.filter(l => l !== undefined) as Label[];
   },
 
   // Sync Queue Methods

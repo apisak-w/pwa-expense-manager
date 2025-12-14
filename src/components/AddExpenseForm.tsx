@@ -7,11 +7,16 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { useCategories } from '../hooks/useCategories';
+import { useLabels } from '../hooks/useLabels';
 import { CategoryManager } from './CategoryManager';
-import { CheckCircle2, Circle, Settings } from 'lucide-react';
+import { LabelManager } from './LabelManager';
+import { CheckCircle2, Circle, Settings, Tag } from 'lucide-react';
 
 interface Props {
-  onAdd: (expense: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => Promise<void>;
+  onAdd: (
+    expense: Omit<Expense, 'id' | 'synced' | 'updatedAt'>,
+    labelIds?: string[]
+  ) => Promise<void>;
 }
 
 export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
@@ -23,8 +28,11 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
   const [isCleared, setIsCleared] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCategoryManager, setShowCategoryManager] = useState(false);
+  const [showLabelManager, setShowLabelManager] = useState(false);
+  const [selectedLabelIds, setSelectedLabelIds] = useState<string[]>([]);
 
   const { getCategoriesByType, refreshCategories } = useCategories();
+  const { labels, refreshLabels } = useLabels();
   const availableCategories = getCategoriesByType(type);
 
   // Reset category when type changes
@@ -37,14 +45,17 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
     if (!amount || !description || !category) return;
 
     setIsSubmitting(true);
-    await onAdd({
-      amount: parseFloat(amount),
-      description,
-      category,
-      date,
-      type,
-      isCleared,
-    });
+    await onAdd(
+      {
+        amount: parseFloat(amount),
+        description,
+        category,
+        date,
+        type,
+        isCleared,
+      },
+      selectedLabelIds
+    );
     setIsSubmitting(false);
 
     // Reset form
@@ -53,6 +64,7 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
     // Keep current type and category
     setDate(dayjs().format('YYYY-MM-DD'));
     setIsCleared(true);
+    setSelectedLabelIds([]);
   };
 
   if (showCategoryManager) {
@@ -75,6 +87,32 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
             onClose={async () => {
               await refreshCategories();
               setShowCategoryManager(false);
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (showLabelManager) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 50,
+          background: 'rgba(0,0,0,0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem',
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: '500px' }}>
+          <LabelManager
+            onClose={async () => {
+              await refreshLabels();
+              setShowLabelManager(false);
             }}
           />
         </div>
@@ -177,17 +215,63 @@ export function AddExpenseForm({ onAdd }: Props): React.JSX.Element {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="date" className="text-sm font-medium text-foreground">
-                  Date
-                </Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={date}
-                  onChange={e => setDate(e.target.value)}
-                  className="h-11 text-base block w-full appearance-none text-left"
-                  required
-                />
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium text-foreground">Labels (Optional)</Label>
+                  <button
+                    type="button"
+                    onClick={() => setShowLabelManager(true)}
+                    className="text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    <Tag size={12} /> Manage
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2 min-h-[40px] p-2 border border-input rounded-md bg-background">
+                  {labels
+                    .filter(label => selectedLabelIds.includes(label.id))
+                    .map(label => (
+                      <div
+                        key={label.id}
+                        className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-md text-sm"
+                      >
+                        {label.name}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedLabelIds(prev => prev.filter(id => id !== label.id))
+                          }
+                          className="text-primary hover:text-primary/80"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  {labels.length > 0 && (
+                    <Select
+                      value=""
+                      onValueChange={value => {
+                        if (value && !selectedLabelIds.includes(value)) {
+                          setSelectedLabelIds(prev => [...prev, value]);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-auto h-8 border-none shadow-none p-0 bg-transparent">
+                        <SelectValue placeholder="Add label..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {labels
+                          .filter(label => !selectedLabelIds.includes(label.id))
+                          .map(label => (
+                            <SelectItem key={label.id} value={label.id}>
+                              {label.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {labels.length === 0 && (
+                    <span className="text-muted-foreground text-sm">No labels available</span>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -8,7 +8,10 @@ import { useNetworkStatus } from './useNetworkStatus';
 
 export function useExpenses(): {
   expenses: Expense[];
-  addExpense: (expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt'>) => Promise<void>;
+  addExpense: (
+    expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt' | 'createdAt'>,
+    labelIds?: string[]
+  ) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
   toggleCleared: (id: string) => Promise<void>;
 } {
@@ -52,7 +55,8 @@ export function useExpenses(): {
   }, [isOnline]);
 
   const addExpense = async (
-    expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt' | 'createdAt'>
+    expenseData: Omit<Expense, 'id' | 'synced' | 'updatedAt' | 'createdAt'>,
+    labelIds: string[] = []
   ): Promise<void> => {
     const now = dayjs().valueOf();
     const newExpense: Expense = {
@@ -64,6 +68,16 @@ export function useExpenses(): {
     };
 
     await storage.addExpense(newExpense);
+
+    // Add label mappings
+    for (const labelId of labelIds) {
+      const map = {
+        id: uuidv4(),
+        transactionId: newExpense.id,
+        labelId,
+      };
+      await storage.addTransactionLabelMap(map);
+    }
 
     // Queue for sync
     const syncItem: SyncItem = {
@@ -83,6 +97,9 @@ export function useExpenses(): {
   };
 
   const deleteExpense = async (id: string): Promise<void> => {
+    // Remove label mappings first
+    await storage.deleteTransactionLabelMapsByTransaction(id);
+
     await storage.deleteExpense(id);
 
     const syncItem: SyncItem = {

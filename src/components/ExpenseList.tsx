@@ -1,4 +1,4 @@
-import type { Expense } from '../types';
+import type { Expense, Label } from '../types';
 import dayjs from 'dayjs';
 import { CheckCircle2, Circle, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
@@ -11,9 +11,15 @@ interface Props {
   expenses: Expense[];
   onDelete: (id: string) => void;
   onToggleCleared: (id: string) => void;
+  labelsMap?: Record<string, Label[]>;
 }
 
-export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): React.JSX.Element {
+export function ExpenseList({
+  expenses,
+  onDelete,
+  onToggleCleared,
+  labelsMap,
+}: Props): React.JSX.Element {
   if (expenses.length === 0) {
     return (
       <Alert>
@@ -47,6 +53,20 @@ export function ExpenseList({ expenses, onDelete, onToggleCleared }: Props): Rea
                     <Badge variant="outline" className="text-xs font-medium">
                       {expense.category}
                     </Badge>
+                    {labelsMap && labelsMap[expense.id] && labelsMap[expense.id].length > 0 && (
+                      <div className="flex gap-1">
+                        {labelsMap[expense.id].slice(0, 2).map(label => (
+                          <Badge key={label.id} variant="secondary" className="text-xs">
+                            {label.name}
+                          </Badge>
+                        ))}
+                        {labelsMap[expense.id].length > 2 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{labelsMap[expense.id].length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <span
                     className={`font-bold text-lg ${

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useExpenses } from '../hooks/useExpenses';
 import { useCategories } from '../hooks/useCategories';
+import { useLabels } from '../hooks/useLabels';
 import { ExpenseList } from '../components/ExpenseList';
 import { Input } from '../components/ui/input';
 
@@ -15,15 +16,37 @@ import {
 import { Button } from '../components/ui/button';
 import { ArrowLeft, Search, X } from 'lucide-react';
 import dayjs from 'dayjs';
+import { storage } from '../services/storage';
+import type { Label } from '../types';
 
 export function Transactions(): React.JSX.Element {
   const { expenses, deleteExpense, toggleCleared } = useExpenses();
   const { categories } = useCategories();
+  const { labels } = useLabels();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>(dayjs().format('YYYY-MM'));
+  const [selectedLabel, setSelectedLabel] = useState<string>('all');
+  const [labelsMap, setLabelsMap] = useState<Record<string, Label[]>>({});
+  const expensesIdsRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    const currentIds = expenses.map(e => e.id).sort();
+    if (JSON.stringify(currentIds) === JSON.stringify(expensesIdsRef.current)) return;
+    expensesIdsRef.current = currentIds;
+
+    const fetchLabelsForExpenses = async (): Promise<void> => {
+      const map: Record<string, Label[]> = {};
+      for (const expense of expenses) {
+        const expenseLabels = await storage.getLabelsForTransaction(expense.id);
+        map[expense.id] = expenseLabels;
+      }
+      setLabelsMap(map);
+    };
+    fetchLabelsForExpenses();
+  }, [expenses]); // Only re-fetch when expenses change
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter(expense => {
@@ -54,22 +77,56 @@ export function Transactions(): React.JSX.Element {
         }
       }
 
+      // Filter by Label
+      if (selectedLabel !== 'all') {
+        const expenseLabels = labelsMap[expense.id] || [];
+        if (!expenseLabels.some(label => label.id === selectedLabel)) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [expenses, searchQuery, selectedType, selectedCategory, selectedMonth]);
+  }, [
+    expenses,
+    searchQuery,
+    selectedType,
+    selectedCategory,
+    selectedMonth,
+    selectedLabel,
+    labelsMap,
+  ]);
 
   const clearFilters = (): void => {
     setSearchQuery('');
     setSelectedType('all');
     setSelectedCategory('all');
     setSelectedMonth(dayjs().format('YYYY-MM'));
+    setSelectedLabel('all');
   };
 
   const hasActiveFilters =
     searchQuery !== '' ||
     selectedType !== 'all' ||
     selectedCategory !== 'all' ||
-    selectedMonth !== dayjs().format('YYYY-MM');
+    selectedMonth !== dayjs().format('YYYY-MM') ||
+    selectedLabel !== 'all';
+
+  const summary = useMemo(() => {
+    if (selectedLabel === 'all') return null;
+
+    const totalIncome = filteredExpenses
+      .filter(e => e.type === 'income')
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    const totalExpense = filteredExpenses
+      .filter(e => e.type === 'expense')
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    const netBalance = totalIncome - totalExpense;
+
+    return { totalIncome, totalExpense, netBalance };
+  }, [filteredExpenses, selectedLabel]);
 
   return (
     <div className="pb-20 max-w-3xl mx-auto px-6 py-12">
@@ -100,7 +157,7 @@ export function Transactions(): React.JSX.Element {
         </div>
 
         {/* Filters */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Select value={selectedType} onValueChange={setSelectedType}>
             <SelectTrigger>
               <SelectValue placeholder="Type" />
@@ -126,7 +183,21 @@ export function Transactions(): React.JSX.Element {
             </SelectContent>
           </Select>
 
-          <div className="col-span-2 md:col-span-1">
+          <Select value={selectedLabel} onValueChange={setSelectedLabel}>
+            <SelectTrigger>
+              <SelectValue placeholder="Label" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Labels</SelectItem>
+              {labels.map(label => (
+                <SelectItem key={label.id} value={label.id}>
+                  {label.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div>
             <Input
               id="month"
               type="month"
@@ -150,10 +221,35 @@ export function Transactions(): React.JSX.Element {
         )}
       </div>
 
+      {summary && (
+        <div className="mb-8 p-4 bg-muted/50 rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Label Summary</h3>
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-sm text-muted-foreground">Total Income</p>
+              <p className="text-xl font-bold text-green-600">+${summary.totalIncome.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Expense</p>
+              <p className="text-xl font-bold text-red-600">-${summary.totalExpense.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Net Balance</p>
+              <p
+                className={`text-xl font-bold ${summary.netBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {summary.netBalance >= 0 ? '+' : ''}${summary.netBalance.toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ExpenseList
         expenses={filteredExpenses}
         onDelete={deleteExpense}
         onToggleCleared={toggleCleared}
+        labelsMap={labelsMap}
       />
     </div>
   );
